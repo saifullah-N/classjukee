@@ -1,8 +1,11 @@
+
 import React, { useEffect, useState } from 'react'
 import openSocket from 'socket.io-client';
 // import { getMac, subscribeToTimer } from './api'
 
 var socket = openSocket("http://localhost:8080")
+
+
 function Row({machID,PushData}) {
     
 function subscribeToTimer(cb) {
@@ -17,13 +20,13 @@ useEffect(()=>{
 
    setPeices(peices)
    setTime(time)
-
-    PushData({ machID :machID,peices :peices,time :time})
+    PushData({ machID: machID, peices: parseInt(peices), time: parseInt(time) }, parseInt((machID.slice(machID.length - 1))-1));
+   
   })
-
+  
 })
-  return (
-      <tr>
+return (
+  <tr>
           <td>{machID}</td>
           <td>{peices}</td>
           <td>{time}</td>

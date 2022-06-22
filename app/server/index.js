@@ -7,6 +7,8 @@ const {
     Server
 } = require('socket.io')
 const { table, log } = require('console')
+const firebase=require('firebase/compat/app')
+const fdb = require('firebase/compat/database')
 //server creation
 app.use(cors())
 const server = http.createServer(app)
@@ -16,7 +18,21 @@ const io = new Server(server, {
         methods: ["GET", "POST"]
     }
 });
+const firebaseConfig = {
+    apiKey: "AIzaSyC5q_GDLC4JHZDqXT3gntvk-bklp-K1s5Q",
+    authDomain: "prithviautomation.firebaseapp.com",
+    databaseURL: "https://prithviautomation-default-rtdb.firebaseio.com",
+    projectId: "prithviautomation",
+    storageBucket: "prithviautomation.appspot.com",
+    messagingSenderId: "767180062288",
+    appId: "1:767180062288:web:240c671d34021729e79b55",
+    measurementId: "G-MXLSS4VF4D"
+};
 
+// Initialize Firebase
+const firebaseApp = firebase.initializeApp(firebaseConfig);
+// const analytics =  firebase.getAnalytics(firebaseApp);
+const rtdb= firebase.database();
 const host =  '10.1.75.125'//'182.72.162.13'
 const port = '1883'//'2123'//'9900'
 const clientId = `mqtt_${Math.random().toString(16).slice(3)}`
@@ -49,6 +65,7 @@ class Data  {
     this.machID =machID;
     this.client = client;
     this.io=io;
+    this.rtdb = rtdb;
     }
 
 connection() {
@@ -95,6 +112,21 @@ getTime() {
     //     return ({machID:this.machID,time:this.time ,peices:this.peices})
     // }
 
+  async getAtTime(attime) {
+    // Get a database reference to our posts
+    
+     this.ref = this.rtdb.ref(this.machID);
+
+      this.dat= await this.ref.on('value', (snapshot) => {
+          return snapshot.val();})
+
+        Object.values(this.dat).forEach((value) => {
+            if (value.time == attime) {
+                console.log(value)
+                console.log(value.peices);}
+        })
+        
+    }
     emmiter(){
        this.io.on('connection', (socket) => {
             socket.on(`subscribeToTimer+${this.machID}`, (interval) => {
@@ -102,6 +134,16 @@ getTime() {
                 setInterval(() => {
                     this.getPeices()
                     this.getTime()
+                    if(this.peices!=null && this.peices!=undefined ){
+                        this.timestamp = new Date()
+
+                        this.rtdb.ref(this.machID).push({
+                            
+                           timestamp: this.timestamp.getHours() +":"+this.timestamp.getMinutes() , 
+                            peices :this.peices});
+                      
+                    }
+
                     socket.emit(this.machID, this.peices, this.time);
                 //    console.log(this.machID, this.peices);
                    // console.log('func:'+this.getPeices());
@@ -126,6 +168,8 @@ m3.emmiter()
 m4.emmiter()
 m5.emmiter()
 m6.emmiter()
+console.log(m1.getAtTime("19:48"))
+// m1.getAtTime("18:15")
 // x.connection()
 // y.connection()
 // x.emmiter()

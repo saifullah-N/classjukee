@@ -1,25 +1,38 @@
 
 import './App.css';
-// import Home from './Home';
+
 import ReactHTMLTableToExcel from  'react-html-table-to-excel'
 import Table from 'react-bootstrap/Table'
-import { useState } from 'react';
-// import io from 'socket.io-client'
+import { useState ,useEffect} from 'react';
+
 import Row from './Row';
-// var socket = io.connect("http://localhost:8080")
+import Graph from './Graph';
+import _ from 'lodash';
+
 function App() {
-  // const[ num ,setNum]=useState(1) 
-  // function noOfMachine(){
-  //   socket.emit('macno',num)
-  // }
-  const [graphData,setGraphData] =useState([])
-const PushData=(machineData)=>{
-  graphData.push(machineData)
+
+  var data = [{ machID: 'mach-1', peices: 0, time: 0 }, { machID: 'mach-2', peices: 0, time: 0 }, { machID: 'mach-3', peices: 0, time: 0 },{ machID: 'mach-4', peices: 0, time: 0 },{ machID: 'mach-5', peices: 0, time: 0 },{ machID: 'mach-6', peices: 0, time: 0 }];
+  var Defaultdata = [{ machID: 'mach-1', peices: 0, time: 0 }, { machID: 'mach-2', peices: 0, time: 0 }, { machID: 'mach-3', peices: 0, time: 0 }, { machID: 'mach-4', peices: 0, time: 0 }, { machID: 'mach-5', peices: 0, time: 0 }, { machID: 'mach-6', peices: 0, time: 0 }];
+  const [graphData, setGraphData] =useState(Defaultdata)
+  async function PushData(machineData,index){
+   data[index] = machineData
+
 }
+useEffect(() => {
+  setInterval(() => {
+
+  setGraphData(data)
+    if (graphData.length == 0) {
+      setGraphData(Defaultdata)
+    }
+  
+  }
+  ,4000)
+  
+
+  },[setGraphData,Graph]);
   return (
     <div>
-      {/* <input onChange={(e)=>{setNum(e.target.value)}} placeholder='enter no.of machine'></input> */}
-      {/* <button onClick={noOfMachine}>submit</button> */}
       <ReactHTMLTableToExcel
         id="test-table-xls-button"
         className="download-table-xls-button"
@@ -48,6 +61,8 @@ const PushData=(machineData)=>{
 
         </tbody>
       </Table>
+   
+        <Graph graphData={graphData}></Graph>
 
     </div>
   );
