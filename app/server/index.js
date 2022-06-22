@@ -111,22 +111,31 @@ getTime() {
     //     this.getTime()
     //     return ({machID:this.machID,time:this.time ,peices:this.peices})
     // }
-
+         
   async getAtTime(attime) {
     // Get a database reference to our posts
     
      this.ref = this.rtdb.ref(this.machID);
-
-      this.dat= await this.ref.on('value', (snapshot) => {
-          return snapshot.val();})
-
-        Object.values(this.dat).forEach((value) => {
-            if (value.time == attime) {
-                console.log(value)
-                console.log(value.peices);}
-        })
+     try {
+          await this.ref.on('value', (snapshot) => {
+       // console.log(snapshot.val())
+          Object.values(snapshot.val()).forEach((value) => {
+           // console.log(value)
+           if (value.timestamp == attime) {
+            //console.log(value.peices);
+               this.data=  value.peices;
+              }
+          })          
+          })
+        }
+        catch(e){
+            console.log(e);
+        }
+          return this.data;
+      
         
     }
+    
     emmiter(){
        this.io.on('connection', (socket) => {
             socket.on(`subscribeToTimer+${this.machID}`, (interval) => {
@@ -168,7 +177,11 @@ m3.emmiter()
 m4.emmiter()
 m5.emmiter()
 m6.emmiter()
-console.log(m1.getAtTime("19:48"))
+let x = m1.getAtTime("19:48")
+setTimeout(()=>{
+ console.log(m1.data)   
+},5000)
+
 // m1.getAtTime("18:15")
 // x.connection()
 // y.connection()
