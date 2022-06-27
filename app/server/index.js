@@ -8,12 +8,9 @@ const {
     Server
 } = require('socket.io')
 
-const { table, log } = require('console')
 const firebase=require('firebase/compat/app')
 const fdb = require('firebase/compat/database')
 const { database } = require('firebase-admin')
-const e = require('express')
-const { start } = require('repl')
 //server creation
 app.use(cors())
 const server = http.createServer(app)
@@ -74,6 +71,19 @@ class Data  {
         this._=_
     }
 
+ChronJob(){
+setInterval(()=>{
+    this.day=new Date();
+    if(this.day.getHours()+":"+this.day.getMinutes()+":"+this.day.getSeconds()=="24:00:0"){
+        this.rtdb.ref(this.machID).remove()
+        console.log("refresh")
+    }
+
+
+},1000);
+
+}   
+
 connection() {
   this.client.on("connect",()=>{
     console.log("connected");
@@ -125,6 +135,7 @@ getPeices(){
         this.report=[]
         this.peicesNow=0
     const snapshot = await this.rtdb.ref(this.machID).once('value')
+    if (snapshot.length > 0) {
     var obj = this
     var time=["8:00","8:30", "9:00","9:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30", "13:00", "13:30", "14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00", "17:30", "18:00", "18:30","19:30","20:00","20:30"]
              time.map(function(timebro){                 
@@ -143,7 +154,7 @@ getPeices(){
                 } )
 
         })        
-        console.log(this.report);   
+        console.log(this.report);  } 
         }
             
 
@@ -181,29 +192,6 @@ getPeices(){
                 });
             }        
             
-        
-        
-         timestrToSec(timestr) {
-             var parts = timestr.split(":");
-             return (parts[0] * 3600) +
-                 (parts[1] * 60) +
-                 (+parts[2]);
-         }
-     
-         pad(num) {
-             if (num < 10) {
-                 return "0" + num;
-             } else {
-                 return "" + num;
-             }
-         }
-     
-         formatTime(seconds) {
-             return [pad(Math.floor(seconds / 3600)),
-             pad(Math.floor(seconds / 60) % 60),
-             pad(seconds % 60),
-             ].join(":");
-         }
          storeRecord() {
       setInterval(()=>{
      this.getPeices()
@@ -291,6 +279,13 @@ m3.PassReacordToReact()
 m4.PassReacordToReact()
 m5.PassReacordToReact()
 m6.PassReacordToReact()
+
+m1.ChronJob()
+m2.ChronJob()
+m3.ChronJob()
+m4.ChronJob()
+m5.ChronJob()
+m6.ChronJob()
 
 // m6.storeRecord()
 // newTime=new Date()
