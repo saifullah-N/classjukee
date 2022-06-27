@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { saveAs } from 'file-saver'; 
 import _ from "lodash"
 import {
     Chart as ChartJS,
@@ -28,7 +29,7 @@ function Graph({graphData})
         labels: ['mach-1', 'mach-2', 'mach-3', 'mach-4', 'mach-5', 'mach-6'],
         datasets: [
             {
-                label: "peices",
+                label: "pieces",
                 data: [0,0,0,0,0,0,0],
                 backgroundColor: "rgba(255, 99, 132, 0.5)",
             },
@@ -66,9 +67,9 @@ function Graph({graphData})
                 t = 0
         })
         const labels = _.map(graphData, "machID")
-        const peices = _.map(graphData, "peices")
+        const pieces = _.map(graphData, "pieces")
 
-        peices.map((p) => {
+        pieces.map((p) => {
             if (p === null || p === NaN)
                 p = 0
         })
@@ -77,8 +78,8 @@ function Graph({graphData})
             labels: labels,
             datasets: [
                 {
-                    label: "peices",
-                    data: peices,
+                    label: "pieces",
+                    data: pieces,
                     backgroundColor: "rgba(255, 99, 132, 0.5)",
                 },
                 {
@@ -92,15 +93,22 @@ function Graph({graphData})
     }, 1000)
 }
 
-
+function saveCanvas() {
+    //save to png
+    const canvasSave = document.getElementById('stackD');
+    canvasSave.toBlob(function (blob) {
+        saveAs(blob, "testing.png")
+    })
+}
     useEffect( () => {
         graphSetter()
     }, [setData, graphSetter])
     
     return (
         <>
-            <div style={{ width: "1200px", margin: "auto auto" }}>
-                <Bar options={options} data={data} />
+            <a onClick={saveCanvas} className="btn btn-primary">Download as PNG</a>
+            <div style={{ width: "1100px", margin: "auto auto" }}>
+                <Bar id="stackD" options={options} data={data} />
             </div>
         </>
     );

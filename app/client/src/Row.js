@@ -9,18 +9,18 @@ var socket = openSocket("http://localhost:8080")
 function Row({machID,PushData}) {
     
 function subscribeToTimer(cb) {
-        socket.on(machID, (peices,time) => cb(peices,time));
+        socket.on(machID, (pieces,time) => cb(pieces,time));
         socket.emit(`subscribeToTimer+${machID}`);}
-const [peices,setPeices]=useState()
+const [pieces,setPeices]=useState()
 const [time,setTime]=useState()
 useEffect(()=>{
-  subscribeToTimer((peices,time)=>{
-    //console.log('peices :'+peices);
+  subscribeToTimer((pieces,time)=>{
+    //console.log('pieces :'+pieces);
     // console.log('time :'+time);
 
-   setPeices(peices)
+   setPeices(pieces)
    setTime(time)
-    PushData({ machID: machID, peices: parseInt(peices), time: parseInt(time) }, parseInt((machID.slice(machID.length - 1))-1));
+    PushData({ machID: machID, pieces: parseInt(pieces), time: parseInt(time) }, parseInt((machID.slice(machID.length - 1))-1));
    
   })
   
@@ -28,7 +28,7 @@ useEffect(()=>{
 return (
   <tr>
           <td>{machID}</td>
-          <td>{peices}</td>
+          <td>{pieces}</td>
           <td>{time}</td>
       </tr>
   )

@@ -36,14 +36,41 @@ useEffect(() => {
   },[setGraphData,Graph]);
   return (
     <>
-
+     <nav className="navbar navbar-expand-lg navbar-light bg-light navBar">
+  <a className="navbar-brand a2" href="#">Prithvi</a>
+  <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <span className="navbar-toggler-icon"></span>
+  </button>
+  <div className="collapse navbar-collapse justify-content-end" id="navbarNav">
+    <ul className="navbar-nav">
+      <li className="nav-item">
+    
+     
+        <a className="nav-link a" href="#graph">Graph</a>
+      </li>
+      <li className="nav-item">
+        <a className="nav-link a" href="#updates">Live Updates</a>
+      </li>
+      <li className="nav-item">
+        <a className="nav-link a" href="#analytics">Analytics</a>
+      </li>
+    </ul>
+  </div>
+</nav>
+<div id="graph">
+    <Graph graphData={graphData}></Graph>
+    </div>
+    <div id="updates">
+    <div id="button">
       <ReactHTMLTableToExcel
         id="test-table-xls-button"
-        className="download-table-xls-button"
+        className="download-table-xls-button btn btn-primary"
         table="table-to-xls"
         filename="machinedata"
         sheet="tablexls"
         buttonText="Download as XLS" />
+        </div>
+        <div id="table">
       <Table id="table-to-xls"
       bordered
       variant='dark'
@@ -63,14 +90,20 @@ useEffect(() => {
         <Row PushData={PushData}   machID='mach-5'></Row>
         <Row PushData={PushData}   machID='mach-6'></Row>
         </tbody>
-      </Table>      
+      </Table>  
+      </div>
+      </div>
+      <div id="analytics">
+      <div id="button1">    
      <ReactHTMLTableToExcel
         id="test-table-xls-button"
-        className="download-table-xls-button"
+        className="download-table-xls-button btn btn-primary"
         table="table-to-xls-report"
         filename="report"
         sheet="tablexls"
         buttonText="Download as XLS" />
+        </div>
+        <div id="table1">
       <Table id="table-to-xls-report" 
       bordered
       variant='dark'>
@@ -111,7 +144,8 @@ useEffect(() => {
           <RecordRow machID="mach-6" />
             </tbody>
           </Table>
-        <Graph graphData={graphData}></Graph>
+          </div>
+          </div>
     </>
   );
 }

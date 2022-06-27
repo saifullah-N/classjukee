@@ -9,15 +9,16 @@ function RecordRow({machID}) {
         socket.on("getRecord"+machID, (record) => cb(record));
         socket.emit(`subscribeToRecord+${machID}`);
     }
-    const[time, setTime] = useState([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
- useEffect(() => {
-    getRecord((record)=>{
-        console.log(record)
-        setTime(record)
-        // console.log(time)
-    })
-     },[socket,getRecord])
-       
+    const[time, setTime] = useState([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
+    useEffect(() => {
+        getRecord((record) => {
+            if (record.length != 0) {
+                setTime(record)
+            }
+            setTime([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+        })
+    }, [socket, getRecord])
+
   return (
       <tr>
         <td>{machID}</td>
