@@ -8,7 +8,11 @@ const {
     Server
 } = require('socket.io')
 
+<<<<<<< HEAD
 const firebase = require('firebase/compat/app')
+=======
+const firebase=require('firebase/compat/app')
+>>>>>>> e4dcdd060fe4bfbde8edc7774cbb8e8dd9f7b557
 const fdb = require('firebase/compat/database')
 const { database } = require('firebase-admin')
 //server creation
@@ -71,6 +75,7 @@ class Data {
         this._ = _
     }
 
+<<<<<<< HEAD
     ChronJob() {
         setInterval(() => {
             this.day = new Date();
@@ -78,6 +83,28 @@ class Data {
                 this.rtdb.ref(this.machID).remove()
                 console.log("refresh")
             }
+=======
+ChronJob(){
+setInterval(()=>{
+    this.day=new Date();
+    if(this.day.getHours()+":"+this.day.getMinutes()+":"+this.day.getSeconds()=="24:00:0"){
+        this.rtdb.ref(this.machID).remove()
+        console.log("refresh")
+    }
+
+
+},1000);
+
+}   
+
+connection() {
+  this.client.on("connect",()=>{
+    console.log("connected");
+})}
+subscribeToPeices(){
+    this.client.subscribe(`priv/${this.machID}/peices`)
+}
+>>>>>>> e4dcdd060fe4bfbde8edc7774cbb8e8dd9f7b557
 
 
         }, 1000);
@@ -119,6 +146,7 @@ class Data {
     async getReport() {
         // Get a database reference to our posts
         this.data = 0
+<<<<<<< HEAD
         this.report = []
         this.piecesNow = 0
         const snapshot = await this.rtdb.ref(this.machID).once('value')
@@ -126,6 +154,15 @@ class Data {
             var obj = this
             var time = ["8:00", "8:30", "9:00", "9:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30", "13:00", "13:30", "14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00", "17:30", "18:00", "18:30", "19:30", "20:00", "20:30"]
             time.map(function (timebro) {
+=======
+        this.report=[]
+        this.peicesNow=0
+    const snapshot = await this.rtdb.ref(this.machID).once('value')
+    if (snapshot.length > 0) {
+    var obj = this
+    var time=["8:00","8:30", "9:00","9:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30", "13:00", "13:30", "14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00", "17:30", "18:00", "18:30","19:30","20:00","20:30"]
+             time.map(function(timebro){                 
+>>>>>>> e4dcdd060fe4bfbde8edc7774cbb8e8dd9f7b557
                 Object.values(snapshot.val()).map((value) => {
                     if (value.timestamp == timebro) {
                         if (value.pieces != 0) {
@@ -140,11 +177,65 @@ class Data {
                     }
                 })
 
+<<<<<<< HEAD
             })
             console.log(this.report);
+=======
+        })        
+        console.log(this.report);  } 
+>>>>>>> e4dcdd060fe4bfbde8edc7774cbb8e8dd9f7b557
         }
     }
 
+<<<<<<< HEAD
+=======
+    // async getReport(){
+    //     this.peicesNow=0
+    //     var  obj=this
+    //     const snapshot = await this.rtdb.ref(this.machID)
+    //     var time=["8:00","8:30", "9:00","9:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30", "13:00", "13:30", "14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00", "17:30", "18:00", "18:30","19:30","20:00"]
+    //     time.map(
+    //         async function(time){                 
+    //             Object.values(snapshot.val()).map((value) => {
+    //                 if (value.timestamp == timebro) {
+    //                     obj.data =  value.peices;
+    //                     // console.log(obj.peicesNow)
+    //                 }
+    //             } )
+    //             obj.peicesNow = obj.data - obj.peicesNow;
+    //             obj.report.push(obj.peicesNow);  
+    //             //     this.getPeices()
+    //     }    
+    //     )
+    //     console.log(obj.report)
+    // }   
+    
+    
+    
+        PassReacordToReact() {
+            this.getReport()
+            this.io.on('connection', (socket) => {
+                    socket.emit("getRecord" + this.machID, this.report); 
+                socket.on(`subscribeToRecord+${this.machID}`, (interval) => {
+                    //console.log('client is subscribing to timer with interval ', interval);         
+                })       
+                   
+                });
+            }        
+            
+         storeRecord() {
+      setInterval(()=>{
+     this.getPeices()
+     this.newTime = new Date()
+     this.timeZero = this.newTime.getHours() + ":00:0"
+     this.timeThirty = this.newTime.getHours() + ":30:0"
+    if ((this.newTime.getHours() + ":" + this.newTime.getMinutes() + ":" + this.newTime.getSeconds()) == this.timeZero || (this.newTime.getHours() + ":" + this.newTime.getMinutes() + ":" + this.newTime.getSeconds()) == this.timeThirty) {
+        if (this.peices != null && this.peices != undefined)
+       {
+             this.rtdb.ref(this.machID).push({
+                 peices: parseInt(this.peices),
+                 timestamp: this.newTime.getHours() + ":" + this.newTime.getMinutes()
+>>>>>>> e4dcdd060fe4bfbde8edc7774cbb8e8dd9f7b557
 
 
 
@@ -246,6 +337,16 @@ m3.ChronJob()
 m4.ChronJob()
 m5.ChronJob()
 m6.ChronJob()
+<<<<<<< HEAD
+=======
+
+// m6.storeRecord()
+// newTime=new Date()
+// timeZero=newTime.getHours() + ":00:0" 
+// timeThirty=newTime.getHours() + ":04:0"    
+// console.log((newTime.getHours() + ":" + newTime.getMinutes() + ":" + newTime.getSeconds()) == timeZero || (newTime.getHours() + ":" + newTime.getMinutes() + ":" + newTime.getSeconds()) == timeThirty);
+// m1.dummyPusher()
+>>>>>>> e4dcdd060fe4bfbde8edc7774cbb8e8dd9f7b557
 
 
 server.listen(8080, () => {
