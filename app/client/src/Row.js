@@ -10,7 +10,7 @@ function Row({machID,PushData}) {
     
 function subscribeToTimer(cb) {
         socket.on(machID, (peices,time) => cb(peices,time));
-        socket.emit(`subscribeToTimer+${machID}`, 1000);}
+        socket.emit(`subscribeToTimer+${machID}`);}
 const [peices,setPeices]=useState()
 const [time,setTime]=useState()
 useEffect(()=>{

@@ -44,7 +44,7 @@ function Graph({graphData})
         responsive: true,
         animations:{
             from:1,
-            to:1,
+            to: 1,
         },
         plugins: {
             legend: {
@@ -57,19 +57,19 @@ function Graph({graphData})
         },
     };
 
-  async function graphSetter(){ setInterval(() => {
+  function graphSetter(){ setInterval(() => {
 
 
         const time = _.map(graphData, "time")
         time.map((t) => {
-            if (t == null || t == NaN)
+            if (t === null || t === NaN)
                 t = 0
         })
         const labels = _.map(graphData, "machID")
         const peices = _.map(graphData, "peices")
 
         peices.map((p) => {
-            if (p == null || p == NaN)
+            if (p === null || p === NaN)
                 p = 0
         })
         const defineData = {
@@ -95,7 +95,7 @@ function Graph({graphData})
 
     useEffect( () => {
         graphSetter()
-},[setData])
+    }, [setData, graphSetter])
     
     return (
         <>

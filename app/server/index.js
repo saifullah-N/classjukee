@@ -3,12 +3,17 @@ const express = require('express')
 const app = express()
 const http = require('http')
 const cors = require('cors')
+const _ = require('lodash')
 const {
     Server
 } = require('socket.io')
+
 const { table, log } = require('console')
 const firebase=require('firebase/compat/app')
 const fdb = require('firebase/compat/database')
+const { database } = require('firebase-admin')
+const e = require('express')
+const { start } = require('repl')
 //server creation
 app.use(cors())
 const server = http.createServer(app)
@@ -49,30 +54,30 @@ const connectUrl = `mqtt://${host}:${port}`
 })
 
 client.setMaxListeners(Infinity)
-   var mArry=[]
+   var mArr=[]
 io.on('connection',(socket)=>{   
     socket.on('macno', (num) => {
- mArry=[]
+ mArr=[]
         for (let i = 0; i < num; i++) {
-            mArry.push(`mach-${i+1}`)
+            mArr.push(`mach-${i+1}`)
         }
-        console.log(mArry);
+        console.log(mArr);
     })
 })
 class Data  {    
     
     constructor(machID){
-    this.machID =machID;
-    this.client = client;
-    this.io=io;
-    this.rtdb = rtdb;
+        this.machID =machID;
+        this.client = client;
+        this.io=io;
+        this.rtdb = rtdb;
+        this._=_
     }
 
 connection() {
   this.client.on("connect",()=>{
     console.log("connected");
 })}
-
 subscribeToPeices(){
     this.client.subscribe(`priv/${this.machID}/peices`)
 }
@@ -83,7 +88,7 @@ subscribeToTime(){
 
 getPeices(){
     this.subscribeToPeices()
-    this.client.on("message",(topic,payload)=>{
+    this.client.on("message",(topic,payload)=>{ 
         //console.log("called");
         //  console.log(topic);
     if(topic==`priv/${this.machID}/peices`)
@@ -92,7 +97,7 @@ getPeices(){
         })
      //   this.client.unsubscribe(`priv/${this.machID}/peices`, console.log("unsubsribe"))
         }
-getTime() {
+        getTime() {
        this.subscribeToTime()   
             this.client.on("message", (topic, payload) => {
               //  console.log("called");
@@ -107,34 +112,134 @@ getTime() {
     }
     // getData(){
     //     this.connection()
-    //     this.getPeices()
     //     this.getTime()
     //     return ({machID:this.machID,time:this.time ,peices:this.peices})
     // }
-         
-  async getAtTime(attime) {
+    
     // Get a database reference to our posts
     
-     this.ref = this.rtdb.ref(this.machID);
-     try {
-          await this.ref.on('value', (snapshot) => {
-       // console.log(snapshot.val())
-          Object.values(snapshot.val()).forEach((value) => {
-           // console.log(value)
-           if (value.timestamp == attime) {
-            //console.log(value.peices);
-               this.data=  value.peices;
-              }
-          })          
-          })
+    
+    async getReport() {
+    // Get a database reference to our posts
+        this.data = 0
+        this.report=[]
+        this.peicesNow=0
+    const snapshot = await this.rtdb.ref(this.machID).once('value')
+    var obj = this
+    var time=["8:00","8:30", "9:00","9:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30", "13:00", "13:30", "14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00", "17:30", "18:00", "18:30","19:30","20:00","20:30"]
+             time.map(function(timebro){                 
+                Object.values(snapshot.val()).map((value) => {
+                    if (value.timestamp == timebro) {
+                        if(value.peices!=0){
+                        obj.data =  value.peices;
+                         obj.peicesNow = obj.data - obj.peicesNow;
+                         obj.report.push(obj.peicesNow); 
+                        }
+                        else{ 
+                            obj.report.push(0)
+                        }
+
+                    }
+                } )
+
+        })        
+        console.log(this.report);   
         }
-        catch(e){
-            console.log(e);
-        }
-          return this.data;
-      
+            
+
+    // async getReport(){
+    //     this.peicesNow=0
+    //     var  obj=this
+    //     const snapshot = await this.rtdb.ref(this.machID)
+    //     var time=["8:00","8:30", "9:00","9:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30", "13:00", "13:30", "14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00", "17:30", "18:00", "18:30","19:30","20:00"]
+    //     time.map(
+    //         async function(time){                 
+    //             Object.values(snapshot.val()).map((value) => {
+    //                 if (value.timestamp == timebro) {
+    //                     obj.data =  value.peices;
+    //                     // console.log(obj.peicesNow)
+    //                 }
+    //             } )
+    //             obj.peicesNow = obj.data - obj.peicesNow;
+    //             obj.report.push(obj.peicesNow);  
+    //             //     this.getPeices()
+    //     }    
+    //     )
+    //     console.log(obj.report)
+    // }   
+    
+    
+    
+        PassReacordToReact() {
+            this.getReport()
+            this.io.on('connection', (socket) => {
+                    socket.emit("getRecord" + this.machID, this.report); 
+                socket.on(`subscribeToRecord+${this.machID}`, (interval) => {
+                    //console.log('client is subscribing to timer with interval ', interval);         
+                })       
+                   
+                });
+            }        
+            
         
+        
+         timestrToSec(timestr) {
+             var parts = timestr.split(":");
+             return (parts[0] * 3600) +
+                 (parts[1] * 60) +
+                 (+parts[2]);
+         }
+     
+         pad(num) {
+             if (num < 10) {
+                 return "0" + num;
+             } else {
+                 return "" + num;
+             }
+         }
+     
+         formatTime(seconds) {
+             return [pad(Math.floor(seconds / 3600)),
+             pad(Math.floor(seconds / 60) % 60),
+             pad(seconds % 60),
+             ].join(":");
+         }
+         storeRecord() {
+      setInterval(()=>{
+     this.getPeices()
+     this.newTime = new Date()
+     this.timeZero = this.newTime.getHours() + ":00:0"
+     this.timeThirty = this.newTime.getHours() + ":30:0"
+    if ((this.newTime.getHours() + ":" + this.newTime.getMinutes() + ":" + this.newTime.getSeconds()) == this.timeZero || (this.newTime.getHours() + ":" + this.newTime.getMinutes() + ":" + this.newTime.getSeconds()) == this.timeThirty) {
+        if (this.peices != null && this.peices != undefined)
+       {
+             this.rtdb.ref(this.machID).push({
+                 peices: parseInt(this.peices),
+                 timestamp: this.newTime.getHours() + ":" + this.newTime.getMinutes()
+
+             })}
+         else
+          {
+            this.rtdb.ref(this.machID).push({
+             peices: 0,
+             timestamp:this.newTime.getHours() + ":" + this.newTime.getMinutes()
+         })}
+         //formatTime(timestrToSec(this.timeCheck) + timestrToSec("00:30:00"));
+     }
+ },1000)
+
+
+
     }
+
+
+
+    // dummyPusher(){
+    //     this.rtdb.ref().push({
+    //         peices: 0,
+    //        // timestamp: this.newTime.getHours() + ":" + this.newTime.getMinutes()
+    //     })
+    // }
     
     emmiter(){
        this.io.on('connection', (socket) => {
@@ -143,16 +248,6 @@ getTime() {
                 setInterval(() => {
                     this.getPeices()
                     this.getTime()
-                    if(this.peices!=null && this.peices!=undefined ){
-                        this.timestamp = new Date()
-
-                        this.rtdb.ref(this.machID).push({
-                            
-                           timestamp: this.timestamp.getHours() +":"+this.timestamp.getMinutes() , 
-                            peices :this.peices});
-                      
-                    }
-
                     socket.emit(this.machID, this.peices, this.time);
                 //    console.log(this.machID, this.peices);
                    // console.log('func:'+this.getPeices());
@@ -177,10 +272,38 @@ m3.emmiter()
 m4.emmiter()
 m5.emmiter()
 m6.emmiter()
-let x = m1.getAtTime("19:48")
-setTimeout(()=>{
- console.log(m1.data)   
-},5000)
+m1.storeRecord()
+m2.storeRecord()
+m3.storeRecord()
+m4.storeRecord()
+m5.storeRecord()
+m6.storeRecord()
+m2.getReport()
+m3.getReport()
+m4.getReport()  
+m5.getReport()
+m6.getReport()
+
+
+m1.PassReacordToReact()
+m2.PassReacordToReact()
+m3.PassReacordToReact()
+m4.PassReacordToReact()
+m5.PassReacordToReact()
+m6.PassReacordToReact()
+
+// m6.storeRecord()
+// newTime=new Date()
+// timeZero=newTime.getHours() + ":00:0" 
+// timeThirty=newTime.getHours() + ":04:0"    
+// console.log((newTime.getHours() + ":" + newTime.getMinutes() + ":" + newTime.getSeconds()) == timeZero || (newTime.getHours() + ":" + newTime.getMinutes() + ":" + newTime.getSeconds()) == timeThirty);
+// m1.dummyPusher()
+
+// console.log(m1.getAtTime("19:48"))
+// console.log(x);
+// setTimeout(()=>{
+//  console.log(m1.data)   
+// },10000)
 
 // m1.getAtTime("18:15")
 // x.connection()
@@ -212,3 +335,29 @@ setTimeout(()=>{
 server.listen(8080, () => {
     console.log("done dude")
 })
+
+/**
+         
+  async getAtTime(attime) {
+    // Get a database reference to our posts
+    
+     const snapshot = await this.rtdb.ref(this.machID).once('value')
+
+                    Object.values(snapshot.val()).map((value) => {
+                        if (value.timestamp == attime) {
+
+                            this.data = value.peices;
+                   }
+                   else this.data = 0 ;    
+                     }
+                      ) 
+      return  this.data;
+        }
+        
+        */
+// if (time==timevar) {
+//     
+
+//     });
+
+// }
