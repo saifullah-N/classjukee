@@ -20,23 +20,19 @@ ChartJS.register(
     Legend
 );
 
-function Graph({graphData}) 
-{   
-    
+function Graph({graphData ,label}) {   
+//     if(label=="pieces"){
+//     console.log(_.map(graphData, label))
+// }
     const [data, setData] = useState({
 
         labels: ['mach-1', 'mach-2', 'mach-3', 'mach-4', 'mach-5', 'mach-6'],
         datasets: [
             {
-                label: "peices",
+                label: label,
                 data: [0,0,0,0,0,0,0],
                 backgroundColor: "rgba(255, 99, 132, 0.5)",
-            },
-            {
-                label: "time",
-                data: [0,0,0,0,0,0],
-                backgroundColor: "rgba(53, 162, 235, 0.5)",
-            },
+            }
         ],
     })
 
@@ -52,7 +48,7 @@ function Graph({graphData})
             },
             title: {
                 display: true,
-                text: "Efficiency of Machines",
+                text: `Efficiency of Machines based on ${label}`,
             },
         },
     };
@@ -60,32 +56,31 @@ function Graph({graphData})
   function graphSetter(){ setInterval(() => {
 
 
-        const time = _.map(graphData, "time")
-        time.map((t) => {
+        const plotData = _.map(graphData,label);
+        plotData.map((t) => {
             if (t === null || t === NaN)
                 t = 0
         })
         const labels = _.map(graphData, "machID")
-        const peices = _.map(graphData, "peices")
 
-        peices.map((p) => {
-            if (p === null || p === NaN)
-                p = 0
-        })
+        // pieces.map((p) => {
+        //     if (p === null || p === NaN)
+        //         p = 0
+        // })
         const defineData = {
 
             labels: labels,
             datasets: [
                 {
-                    label: "peices",
-                    data: peices,
+                    label: label,
+                    data: plotData,
                     backgroundColor: "rgba(255, 99, 132, 0.5)",
-                },
-                {
-                    label: "time",
-                    data: time,
-                    backgroundColor: "rgba(53, 162, 235, 0.5)",
-                },
+                }
+                // {
+                //     label: "time",
+                //     data: time,
+                //     backgroundColor: "rgba(53, 162, 235, 0.5)",
+                // },
             ],
         }
         setData(defineData)
