@@ -1,34 +1,101 @@
-import React, { Component } from "react";
-import { useState } from "react";
-export default function Login({loginID}){
-    const [email, setEmail] = useState()
-    const [password, setPassword] = useState()
-        return (
-            <form className="form-control">
+// import React, { Component } from "react";
+// import { useState } from "react";
+// export default function Login({loginID}){
+//     const [email, setEmail] = useState()
+//     const [password, setPassword] = useState()
+//         return (
+//             <form className="form-control">
 
-                <h3>Log in</h3>
+//                 <h3>Log in</h3>
 
-                <div className="form-group">
-                    <label>Email</label>
-                    <input type="email" onChange={(e) => setEmail(e.target.value)} className="form-control" placeholder="Enter email"  required/>
-                </div>
+//                 <div className="form-group">
+//                     <label>Email</label>
+//                     <input type="email" onChange={(e) => setEmail(e.target.value)} className="form-control" placeholder="Enter email"  required/>
+//                 </div>
 
-                <div className="form-group">
-                    <label>Password</label>
-                    <input onChange={(e) => setPassword(e.target.value)} type="password" className="form-control" placeholder="Enter password" required />
-                </div>
+//                 <div className="form-group">
+//                     <label>Password</label>
+//                     <input onChange={(e) => setPassword(e.target.value)} type="password" className="form-control" placeholder="Enter password" required />
+//                 </div>
 
-                <div className="form-group">
-                    <div className="custom-control custom-checkbox">
-                        <input type="checkbox" className="custom-control-input" id="customCheck1" required />
-                        <label className="custom-control-label" htmlFor="customCheck1">Remember me</label>
+//                 <div className="form-group">
+//                     <div className="custom-control custom-checkbox">
+//                         <input type="checkbox" className="custom-control-input" id="customCheck1" required />
+//                         <label className="custom-control-label" htmlFor="customCheck1">Remember me</label>
+//                     </div>
+//                 </div>
+
+//                 <button type="submit" onClick={()=>{loginID(email,password)}} className="btn btn-dark btn-lg btn-block">Sign in</button>
+//                 {/* <p className="forgot-password text-right">
+//                     Forgot <a href="#">password?</a>
+//                 </p> */}
+//             </form>
+//         );
+//     }
+
+import React, { useState } from 'react'
+import axios from 'axios';
+import { Link, useNavigate } from 'react-router-dom';
+
+const Login = () => {
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [msg, setMsg] = useState('');
+    const history = useNavigate();
+
+    const Auth = async (e) => {
+        e.preventDefault();
+        try {
+            await axios.post('http://localhost:8080/login', {
+                email: email,
+                password: password
+            }).then(response => {
+                if (response.data.refreshToken) {
+                    // console.log("SS",response.data.token)
+                    localStorage.setItem("user", JSON.stringify(response.data.refreshToken));
+                }
+                return response.data;
+            });
+            history("/dashboard");
+        } catch (error) {
+            if (error.response) {
+                setMsg(error.response.data.msg);
+            }
+        }
+    }
+
+    return (
+        <section className="hero has-background-grey-light is-fullheight is-fullwidth">
+            <div className="hero-body">
+                <div className="container">
+                    <div className="columns is-centered">
+                        <div className="column is-4-desktop">
+                            <form onSubmit={Auth} className="box">
+                                <p className="has-text-centered">{msg}</p>
+                                <div className="field mt-5">
+                                    <label className="label">Email or Username</label>
+                                    <div className="controls">
+                                        <input type="text" className="input" placeholder="Username" value={email} onChange={(e) => setEmail(e.target.value)} />
+                                    </div>
+                                </div>
+                                <div className="field mt-5">
+                                    <label className="label">Password</label>
+                                    <div className="controls">
+                                        <input type="password" className="input" placeholder="******" value={password} onChange={(e) => setPassword(e.target.value)} />
+                                    </div>
+                                </div>
+                                <div className="field mt-5">
+                                    <button className="button is-success is-fullwidth">Login</button>
+                                    <Link to={'/register'}>
+                                        Sign up as new User
+                                    </Link>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </div>
-
-                <button type="submit" onClick={()=>{loginID(email,password)}} className="btn btn-dark btn-lg btn-block">Sign in</button>
-                {/* <p className="forgot-password text-right">
-                    Forgot <a href="#">password?</a>
-                </p> */}
-            </form>
-        );
-    }
+            </div>
+        </section>
+    )
+}
+export default Login

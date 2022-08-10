@@ -1,4 +1,6 @@
-
+import axios from 'axios';
+import jwt_decode from "jwt-decode";
+import { useNavigate } from 'react-router-dom';
 import './App.css';
 import ReactHTMLTableToExcel from 'react-html-table-to-excel'
 import Table from 'react-bootstrap/Table'
@@ -11,10 +13,59 @@ import RecordRow from './RecordRow';
 import openSocket from 'socket.io-client';
 var socket = openSocket("http://localhost:8080")
 
+const Dashboard = () => {
+    const [name, setName] = useState('');
+    const [token, setToken] = useState('');
+    const [expire, setExpire] = useState('');
+    const [users, setUsers] = useState([]);
+    const history = useNavigate();
+    // axios.defaults.withCredentials = true;
+    useEffect(() => {
+        getUsers();
+        refreshToken();
+    }, []);
 
-function Home() {
+    const refreshToken = async () => {
+        try {
+            let data = JSON.parse(localStorage.getItem('user'))
+            // console.log(data)
+            const response = await axios.post('http://localhost:8080/token',{  refreshToken: data });
+            setToken(response.data.accessToken);
+            const decoded = jwt_decode(response.data.accessToken);
+            setName(decoded.name);
+            setExpire(decoded.exp);
+        } catch (error) {
+            if (error.response) {
+                history("/");
+            }
+        }
+    }
 
+    const axiosJWT = axios.create();
 
+    axiosJWT.interceptors.request.use(async (config) => {
+        const currentDate = new Date();
+        if (expire * 1000 < currentDate.getTime()) {
+            const response = await axios.post('http://localhost:8080/token', { refreshToken: JSON.parse(localStorage.getItem('user')) });
+            config.headers.Authorization = `Bearer ${response.data.accessToken}`;
+            setToken(response.data.accessToken);
+            const decoded = jwt_decode(response.data.accessToken);
+            setName(decoded.name);
+            setExpire(decoded.exp);
+        }
+        return config;
+    }, (error) => {
+        return Promise.reject(error);
+    });
+
+    const getUsers = async () => {
+        const response = await axiosJWT.get('http://localhost:8080/users', {
+            headers: {
+                authorization: `Bearer ${token}`
+            }
+        });
+        setUsers(response.data);
+    }
     var peiceData = []
     var DefaultPeicedata = [{ machID: 'mach-1', pieces: 0 }, { machID: 'mach-2', pieces: 0 }, { machID: 'mach-3', pieces: 0 }, { machID: 'mach-4', pieces: 0 }, { machID: 'mach-5', pieces: 0 }, { machID: 'mach-6', pieces: 0 }];
     var timeData = []
@@ -157,4 +208,4 @@ function Home() {
     );
 }
 
-export default Home;
+export default Dashboard;

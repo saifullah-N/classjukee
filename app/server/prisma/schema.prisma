@@ -18,9 +18,10 @@ model registeredusers {
 
 model PrithviUser {
   id      Int      @id @default(autoincrement()) 
-  // userName    String?  @db.VarChar(255) @map("user_name")
+  name    String?  @db.VarChar(255) @map("user_name")
   email   String   @unique @db.VarChar(255)
   password String? @db.VarChar(255)
+  refresh_token   String? @db.VarChar(255)
 
 }
 

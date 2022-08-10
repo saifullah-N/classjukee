@@ -10,7 +10,7 @@ import {
     Legend,
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
-
+import { saveAs } from 'file-saver';
 ChartJS.register(
     CategoryScale,
     LinearScale,
@@ -21,9 +21,14 @@ ChartJS.register(
 );
 
 function Graph({graphData ,label}) {   
-//     if(label=="pieces"){
-//     console.log(_.map(graphData, label))
-// }
+    function saveCanvas() {
+        //save to png
+        const canvasSave = document.getElementById(label);
+        canvasSave.toBlob(function (blob) {
+            saveAs(blob, `${label}.png`)
+        })
+    }
+
     const [data, setData] = useState({
 
         labels: ['mach-1', 'mach-2', 'mach-3', 'mach-4', 'mach-5', 'mach-6'],
@@ -94,8 +99,10 @@ function Graph({graphData ,label}) {
     
     return (
         <>
+
             <div style={{ width: "1200px", margin: "auto auto" }}>
-                <Bar options={options} data={data} />
+                <a onClick={saveCanvas} className="btn btn-primary">Download as PNG</a>
+                <Bar options={options}  id={label} data={data} />
             </div>
         </>
     );
