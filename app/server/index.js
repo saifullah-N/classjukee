@@ -1,12 +1,13 @@
 const mqtt = require('mqtt')
 const express = require('express')
-const jwt = require('jsonwebtoken')
 const app = express()
 const http = require('http')
 const cors = require('cors')
-const _ = require('lodash')
-const dotenv = require('dotenv')
-dotenv.config()
+const path = require('path')
+require('dotenv').config({ path: path.resolve(__dirname, '.env') })
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const cookieParser =require("cookie-parser");
 const {
     Server
 } = require('socket.io')
@@ -14,8 +15,12 @@ const { PrismaClient } = require('@prisma/client')
 const prisma = new PrismaClient()
 //server creation
 app.use(cors())
+const router = express.Router();
 app.use(express.json());
+app.use(router);
+app.use(cookieParser())
 const server = http.createServer(app)
+app.use(cors({ credentials: true, origin: 'http://localhost:3000' }));
 const io = new Server(server, {
     cors: {
         origin: "http://localhost:3000",
@@ -117,7 +122,7 @@ getpieces(){
         this.piecesNow=0
           const snapshot = await this.db.findMany({
             })
-            console.log(snapshot)       
+            // console.log(snapshot)       
     if (snapshot.length > 0) {
     var obj = this
     var time=["8:00","8:30", "9:00","9:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30", "13:00", "13:30", "14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00", "17:30", "18:00", "18:30","19:30","20:00","20:30"]
@@ -138,7 +143,7 @@ getpieces(){
                 } )
 
         })        
-        console.log(this.report);  
+        // console.log(this.report);  
     } 
         }
             
@@ -282,124 +287,136 @@ server.listen(8080, () => {
 })
 
 
-//!write signup
+// //!write signup
 
-//??RESPONSE HANDLERS
-async function getDataOfUser(email){
-let data =  await prisma.PrithviUser.findMany({
-    where: {
-        email:email,
-    },
+// //??RESPONSE HANDLERS
+// async function getDataOfUser(email){
+// let data =  await prisma.PrithviUser.findMany({
+//     where: {
+//         email:email,
+//     },
 
-})
-return data;
-}
-
-
-app.post('/signin', (req, res)=>{
-    let userEmail = req.body.email;
-    let password = req.body.password;
-    console.log({userEmail,password})
-    getDataOfUser(userEmail).then((data)=>{
-   data = data[0]
-    if(data !== undefined && password ==data.password){
-        let id = data.id
-        jwt.sign({ id },"iQube@2k22",{expiresIn:"5h"},(err,token)=>{
-            res.json({
-            auth:true,
-            token:token
-        })} );
-    }
-
-    else res.json({auth:false})
-    })
-})
-async function StoreUser(email,password) {
-    await prisma.PrithviUser.create({
-        data: {
-            email:email,
-            password:password 
-
-        },
-    })
-
-}
-app.post('/signup', (req, res)=>{
-    console.log(req.body)
- // console.log(req.email, req.password)
- StoreUser(req.body.email, req.body.password)
-     .then(async () => {
-         await prisma.$disconnect()
-    })
-    .catch(async (e) => {
-        console.error(e)
-        await prisma.$disconnect()
-        process.exit(1)
-    })
+// })
+// return data;
+// }
 
 
-})
-function verifyToken(req,res,next) {
-    const bearerHeader = req.headers['x-access-token'];
-    console.log(bearerHeader)
-    if (typeof(bearerHeader)!=undefined){
-        //    const bearer =bearerHeader.split(' ');
-           const token = bearerHeader;
-           req.token = token;
-           next();
-    }
-    else{
-        res.json({auth:false});
-    }
-}
+// app.post('/signin', (req, res)=>{
+//     let userEmail = req.body.email;
+//     let password = req.body.password;
+//     console.log({userEmail,password})
+//     getDataOfUser(userEmail).then((data)=>{
+//    data = data[0]
+//     if(data !== undefined && password ==data.password){
+//         let id = data.id
+//         jwt.sign({ id },"iQube@2k22",{expiresIn:"5h"},(err,token)=>{
+//             res.json({
+//             auth:true,
+//             token:token
+//         })} );
+//     }
 
-app.get('/',verifyToken,(req,res)=>{
-    if(req.token!=undefined && req.token != null)
-    jwt.verify(req.token, "iQube@2k22",(err,authData)=>{
-    if (err) res.json({auth:false});
-    else{
-        res.json({
-           auth: true 
-        })
-    }
-    
-    })
-    else res.json({auth:false});
-})
-
-
-//??################################ Prisma Expirimentals ###################################
-
-async function main() {
-//     const allUsers = await prisma.Mach1.findMany({
-//         // include: {
-//         //     posts: true,
-//         //     profile: true,
-//         // },
+//     else res.json({auth:false})
 //     })
-//     console.dir(allUsers, { depth: null })
-//     allUsers.forEach(user => {
-//         let x = new Date(user.createdAt).getHours().toLocaleString("en-US", { timeZone: 'Asia/Kolkata' }) +":"+ new Date(user.createdAt).getMinutes().toLocaleString("en-US", { timeZone: 'Asia/Kolkata' })
-// console.log(x)});
-    // await prisma.mach1.deleteMany({})
-
-    // await prisma.mach2.deleteMany({})
-    // await prisma.mach3.deleteMany({})
-    // await prisma.mach4.deleteMany({})
-    // await prisma.mach5.deleteMany({})
-    // await prisma.mach6.deleteMany({})
- 
-}
-
-// async function StoreRecord(){
-//     await prisma.Mach1.create({
+// })
+// async function StoreUser(email,password) {
+//     await prisma.PrithviUser.create({
 //         data: {
-//             peices:"25"
+//             email:email,
+//             password:password 
 
 //         },
 //     })
+
 // }
-// StoreRecord()
+// app.post('/signup', (req, res)=>{
+//     console.log(req.body)
+//  // console.log(req.email, req.password)
+//  StoreUser(req.body.email, req.body.password)
+//      .then(async () => {
+//          await prisma.$disconnect()
+//     })
+//     .catch(async (e) => {
+//         console.error(e)
+//         await prisma.$disconnect()
+//         process.exit(1)
+//     })
+
+
+// })
+// function verifyToken(req,res,next) {
+//     const bearerHeader = req.headers['x-access-token'];
+//     console.log(bearerHeader)
+//     if (typeof(bearerHeader)!=undefined){
+//         //    const bearer =bearerHeader.split(' ');
+//            const token = bearerHeader;
+//            req.token = token;
+//            next();
+//     }
+//     else{
+//         res.json({auth:false});
+//     }
+// }
+
+// app.get('/',verifyToken,(req,res)=>{
+//     if(req.token!=undefined && req.token != null)
+//     jwt.verify(req.token, "iQube@2k22",(err,authData)=>{
+//     if (err) res.json({auth:false});
+//     else{
+//         res.json({
+//            auth: true 
+//         })
+//     }
+    
+//     })
+//     else res.json({auth:false});
+// })
+
+
+// //??################################ Prisma Expirimentals ###################################
+
+// async function main() {
+// //     const allUsers = await prisma.Mach1.findMany({
+// //         // include: {
+// //         //     posts: true,
+// //         //     profile: true,
+// //         // },
+// //     })
+// //     console.dir(allUsers, { depth: null })
+// //     allUsers.forEach(user => {
+// //         let x = new Date(user.createdAt).getHours().toLocaleString("en-US", { timeZone: 'Asia/Kolkata' }) +":"+ new Date(user.createdAt).getMinutes().toLocaleString("en-US", { timeZone: 'Asia/Kolkata' })
+// // console.log(x)});
+//     // await prisma.mach1.deleteMany({})
+
+//     // await prisma.mach2.deleteMany({})
+//     // await prisma.mach3.deleteMany({})
+//     // await prisma.mach4.deleteMany({})
+//     // await prisma.mach5.deleteMany({})
+//     // await prisma.mach6.deleteMany({})
+ 
+// }
+
+// // async function StoreRecord(){
+// //     await prisma.Mach1.create({
+// //         data: {
+// //             peices:"25"
+
+// //         },
+// //     })
+// // }
+// // StoreRecord()
+// //     .then(async () => {
+// //         await prisma.$disconnect()
+// //     })
+// //     .catch(async (e) => {
+// //         console.error(e)
+// //         await prisma.$disconnect()
+// //         process.exit(1)
+// //     })
+
+// // m1.peices = "25";
+// // m1.storeRecord()
+// main()
 //     .then(async () => {
 //         await prisma.$disconnect()
 //     })
@@ -409,14 +426,156 @@ async function main() {
 //         process.exit(1)
 //     })
 
-// m1.peices = "25";
-// m1.storeRecord()
-main()
-    .then(async () => {
-        await prisma.$disconnect()
+
+// import Users from "../models/UserModel.js";
+
+const getUsers = async (req, res) => {
+    try {
+        const users = await prisma.PrithviUser.findMany({
+            select: {email:true,id:true}
+        });
+        res.json(users);
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+const Register = async (req, res) => {
+    const { name, email, password, confPassword } = req.body;
+    if (password !== confPassword) return res.status(400).json({ msg: "Password and Confirm Password do not match" });
+    const salt = await bcrypt.genSalt();
+    const hashPassword = await bcrypt.hash(password, salt);
+    try {
+        await prisma.PrithviUser.create({
+            data: { email: email,
+            password: hashPassword,
+            name:name}
+        });
+        res.json({ msg: "Registration Successful" });
+    } catch (error) {
+        res.json({ msg: "email already exists" });
+    }
+}
+
+const Login = async (req, res) => {
+    try {
+        const user = await prisma.PrithviUser.findMany({
+            where: {
+                email: req.body.email
+            }
+        });
+        const match = await bcrypt.compare(req.body.password, user[0].password);
+        if (!match) return res.status(400).json({ msg: "Wrong Password" });
+        const userId = user[0].id;
+        const name = user[0].name;
+        const email = user[0].email;
+        const accessToken = jwt.sign({ userId, name, email }, "process.env.ACCESS_TOKEN_SECRET", {
+            expiresIn: '15s'
+        });
+        const refreshToken = jwt.sign({ userId, name, email }, "process.env.REFRESH_TOKEN_SECRET", {
+            expiresIn: '1d'
+        });
+        // console.log(refreshToken)
+        await prisma.PrithviUser.update({
+            where: {
+                id: userId
+            },
+            data: { refresh_token: refreshToken }
+        });
+        // res.cookie('refreshToken', refreshToken, {
+        //     httpOnly: false,
+        //     maxAge: 24 * 60 * 60 * 1000
+        // });
+        return res.json({ accessToken: accessToken, refreshToken: refreshToken });
+    } catch (error) {
+        // console.error(error);
+        res.status(404).json({ msg: "Email not found" });
+    }
+}
+
+const Logout = async (req, res) => {
+    // console.log(req.cookies)
+    const refreshToken = req.cookies.refreshToken;
+    if (!refreshToken) return res.sendStatus(204);
+    const user = await prisma.PrithviUser.findMany({
+        where: {
+            refresh_token: refreshToken
+        }
+    });
+    if (!user[0]) return res.sendStatus(204);
+    const userId = user[0].id;
+    await prisma.PrithviUser.update({
+        where: {
+            id: userId
+        },
+        data:{ refresh_token: null }
+    });
+    res.clearCookie('refreshToken');
+    return res.sendStatus(200);
+}
+
+
+const refreshToken = async (req, res) => {
+    try {
+        // console.log(req.body)
+         const refreshToken = req.body.refreshToken;
+        // console.log(refreshToken);
+        if (!refreshToken) return res.sendStatus(401);
+        const user = await prisma.PrithviUser.findMany({
+            where: {
+                refresh_token: refreshToken
+            }
+        });
+        if (!user[0]) return res.sendStatus(403);
+        jwt.verify(refreshToken, "process.env.REFRESH_TOKEN_SECRET", (err, decoded) => {
+            if (err) return res.sendStatus(403);
+            const userId = user[0].id;
+            const name = user[0].name;
+            const email = user[0].email;
+            const accessToken = jwt.sign({ userId, name, email }, "process.env.ACCESS_TOKEN_SECRET", {
+                expiresIn: '15s'
+            });
+            res.json({ accessToken });
+        });
+    } catch (error) {
+        // console.log(error);
+
+    }
+}
+
+const verifyToken = (req, res, next) => {
+    const authHeader = req.headers['authorization'];
+
+    const token =authHeader.split(' ')[2];
+    // console.log(token);
+    if (token == null) return res.sendStatus(401);
+    jwt.verify(token, "process.env.ACCESS_TOKEN_SECRET", (err, decoded) => {
+        if (err) return res.sendStatus(403);
+        req.email = decoded.email;
+        next();
     })
-    .catch(async (e) => {
-        console.error(e)
-        await prisma.$disconnect()
-        process.exit(1)
-    })
+}
+router.get('/users', verifyToken, getUsers);
+router.post('/users', Register);
+router.post('/login', Login);
+router.post('/token', refreshToken);
+router.delete('/logout', Logout);
+// import express from "express";
+// import dotenv from "dotenv";
+//import cookieParser from "cookie-parser";
+// import cors from "cors";
+// import db from "./config/Database.js";
+// import router from "./routes/index.js";
+
+// const app = express();
+
+// app.use(cors({ credentials: true, origin: 'http://localhost:3000' }));
+// app.use(cookieParser());
+// app.use(express.json());
+
+
+// app.listen(5000, () => console.log('Server running at port 5000'));
+
+//   async function main(){await prisma.prithviUser.deleteMany({})
+// console.log('Server running at http://localhost:')}
+// main();

@@ -1,86 +1,112 @@
-import React from 'react'
-import './App.css'
-// import UserService from "../services/user.service";
-import { BrowserRouter as Router, Routes, Route, Link, Navigate } from 'react-router-dom'
-import Login from './Login'
-import SignUp from './SignUp'
-import Home from './Home'
-import authService  from './services/auth.service'
-import {useState ,useEffect} from 'react'
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import Dashboard from "./Dashboard";
+import Login from "./Login";
+import Navbar from "./Navbar";
+import Register from "./Register";
+
 function App() {
-  const [isAUth,setIsAUth] = useState(false)
-  useEffect(() =>{
-     authService.getUserBoard().then((response) =>{
-setIsAUth(response.auth)
-     }
-     )
-
-  })
-  function registerID(email ,password) {
-
-    authService.register(email, password).then((response)=>{
-setIsAUth(response.auth)
- return isAUth ? <Navigate to='/' ><Home></Home></Navigate> : <Navigate to='/options'></Navigate>
-    })
-  }
-    function loginID(email, password) {
-
-      authService.login(email, password).then((response) => {
-        //?? console.log(response.auth);
-        setIsAUth(response.auth)
-        return isAUth ? <Navigate to='/' ><Home></Home></Navigate> : <Navigate to='/options'></Navigate>
-      })     
-
-
-  }
   return (
-    <Router>
+    <BrowserRouter>
       <Routes>
-        <Route path="/sign-in" element={<Login loginID={loginID} />} />
-        <Route path="/sign-up" element={<SignUp registerID={registerID} />} />
-        <Route path="/options" element={
-          <div className="App">
-            <nav className="navbar navbar-expand-lg navbar-light fixed-top">
-              <div className="container">
-                <Link className="navbar-brand" to={'/options'}>
-                  Welcome to Dashboard
-                </Link>
-                <div className="collapse navbar-collapse" id="navbarTogglerDemo02">
-                  <ul className="navbar-nav ml-auto">
-                    <li className="nav-item">
-                      <Link className="nav-link" to={'/sign-in'}>
-                        Sign in
-                      </Link>
-                    </li>
-                    <li className="nav-item">
-                      <Link className="nav-link" to={'/sign-up'}>
-                        Sign up
-                      </Link>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            </nav>
-
-            <div className="outer">
-              <div className="inner">
-                <Routes>
-                  {/* <Route exact path="/" element={<Login />} /> */}
-                  <Route path="/sign-in" element={<Login loginID={loginID} />} />
-                  <Route path="/sign-up" element={<SignUp registerID={registerID} />} />
-                </Routes>
-              </div>
-            </div>
-          </div>} />
-        <Route path="/" element={isAUth ? <Home /> : <Navigate to='/options'></Navigate>}/> 
-        <Route path="/sign-in" element={isAUth ? <Home /> : <Navigate to='/options'></Navigate>} />
-        <Route path="/sign-up" element={isAUth ? <Home /> : <Navigate to='/options'></Navigate>} />
-        </Routes>
-    </Router>
-  )
+        <Route exact path="/"    element={<Login />}/>
+        <Route path="/register"  element={ <Register />}/>
+        <Route path="/dashboard" element={<><Navbar /> <Dashboard /></>}/>
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
-export default App
+export default App;
+
+
+
+
+
+// import React from 'react'
+// import './App.css'
+// // import UserService from "../services/user.service";
+// import { BrowserRouter as Router, Routes, Route, Link, Navigate } from 'react-router-dom'
+// import Login from './Login'
+// import SignUp from './SignUp'
+// import Home from './Home'
+// import authService  from './services/auth.service'
+// import {useState ,useEffect} from 'react'
+// function App() {
+//   const [isAUth,setIsAUth] = useState(false)
+//   useEffect(() =>{
+//      authService.getUserBoard().then((response) =>{
+// setIsAUth(response.auth)
+//      }
+//      )
+
+//   })
+//   function registerID(email ,password) {
+
+//     authService.register(email, password).then((response)=>{
+// setIsAUth(response.auth)
+//  return isAUth ? <Navigate to='/' ><Home></Home></Navigate> : <Navigate to='/options'></Navigate>
+//     })
+//   }
+//     function loginID(email, password) {
+
+//       authService.login(email, password).then((response) => {
+//         //?? console.log(response.auth);
+//         setIsAUth(response.auth)
+//         return isAUth ? <Navigate to='/' ><Home></Home></Navigate> : <Navigate to='/options'></Navigate>
+//       })     
+
+
+//   }
+//   return (
+//     <Router>
+//       <Routes>
+//         <Route path="/sign-in" element={<Login loginID={loginID} />} />
+//         <Route path="/sign-up" element={<SignUp registerID={registerID} />} />
+//         <Route path="/options" element={
+//           <div className="App">
+//             <nav className="navbar navbar-expand-lg navbar-light fixed-top">
+//               <div className="container">
+//                 <Link className="navbar-brand" to={'/options'}>
+//                   Welcome to Dashboard
+//                 </Link>
+//                 <div className="collapse navbar-collapse" id="navbarTogglerDemo02">
+//                   <ul className="navbar-nav ml-auto">
+//                     <li className="nav-item">
+//                       <Link className="nav-link" to={'/sign-in'}>
+//                         Sign in
+//                       </Link>
+//                     </li>
+//                     <li className="nav-item">
+//                       <Link className="nav-link" to={'/sign-up'}>
+//                         Sign up
+//                       </Link>
+//                     </li>
+//                   </ul>
+//                 </div>
+//               </div>
+//             </nav>
+
+//             <div className="outer">
+//               <div className="inner">
+//                 <Routes>
+//                   {/* <Route exact path="/" element={<Login />} /> */}
+//                   <Route path="/sign-in" element={<Login loginID={loginID} />} />
+//                   <Route path="/sign-up" element={<SignUp registerID={registerID} />} />
+//                 </Routes>
+//               </div>
+//             </div>
+//           </div>} />
+//         <Route path="/" element={isAUth ? <Home /> : <Navigate to='/options'></Navigate>}/> 
+//         <Route path="/sign-in" element={isAUth ? <Home /> : <Navigate to='/options'></Navigate>} />
+//         <Route path="/sign-up" element={isAUth ? <Home /> : <Navigate to='/options'></Navigate>} />
+//         </Routes>
+//     </Router>
+//   )
+// }
+
+// export default App
+
+//?old comments
 //   var peiceData = []
 //   var DefaultPeicedata = [{ machID: 'mach-1', pieces: 0 }, { machID: 'mach-2', pieces: 0 }, { machID: 'mach-3', pieces: 0 }, { machID: 'mach-4', pieces: 0 }, { machID: 'mach-5', pieces: 0 }, { machID: 'mach-6', pieces: 0}];
 //   var timeData = []
