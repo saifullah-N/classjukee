@@ -197,12 +197,7 @@ getpieces(){
 
     }
 
-    // dummyPusher(){
-    //     this.rtdb.ref().push({
-    //         pieces: 0,
-    //        // timestamp: this.newTime.getHours() + ":" + this.newTime.geapp/server/index.jsztMinutes()
-    //     })
-    // }s
+ 
     
     emmitpieces(){
        this.io.on('connection', (socket) => {
@@ -287,148 +282,6 @@ server.listen(8080, () => {
 })
 
 
-// //!write signup
-
-// //??RESPONSE HANDLERS
-// async function getDataOfUser(email){
-// let data =  await prisma.PrithviUser.findMany({
-//     where: {
-//         email:email,
-//     },
-
-// })
-// return data;
-// }
-
-
-// app.post('/signin', (req, res)=>{
-//     let userEmail = req.body.email;
-//     let password = req.body.password;
-//     console.log({userEmail,password})
-//     getDataOfUser(userEmail).then((data)=>{
-//    data = data[0]
-//     if(data !== undefined && password ==data.password){
-//         let id = data.id
-//         jwt.sign({ id },"iQube@2k22",{expiresIn:"5h"},(err,token)=>{
-//             res.json({
-//             auth:true,
-//             token:token
-//         })} );
-//     }
-
-//     else res.json({auth:false})
-//     })
-// })
-// async function StoreUser(email,password) {
-//     await prisma.PrithviUser.create({
-//         data: {
-//             email:email,
-//             password:password 
-
-//         },
-//     })
-
-// }
-// app.post('/signup', (req, res)=>{
-//     console.log(req.body)
-//  // console.log(req.email, req.password)
-//  StoreUser(req.body.email, req.body.password)
-//      .then(async () => {
-//          await prisma.$disconnect()
-//     })
-//     .catch(async (e) => {
-//         console.error(e)
-//         await prisma.$disconnect()
-//         process.exit(1)
-//     })
-
-
-// })
-// function verifyToken(req,res,next) {
-//     const bearerHeader = req.headers['x-access-token'];
-//     console.log(bearerHeader)
-//     if (typeof(bearerHeader)!=undefined){
-//         //    const bearer =bearerHeader.split(' ');
-//            const token = bearerHeader;
-//            req.token = token;
-//            next();
-//     }
-//     else{
-//         res.json({auth:false});
-//     }
-// }
-
-// app.get('/',verifyToken,(req,res)=>{
-//     if(req.token!=undefined && req.token != null)
-//     jwt.verify(req.token, "iQube@2k22",(err,authData)=>{
-//     if (err) res.json({auth:false});
-//     else{
-//         res.json({
-//            auth: true 
-//         })
-//     }
-    
-//     })
-//     else res.json({auth:false});
-// })
-
-
-// //??################################ Prisma Expirimentals ###################################
-
-// async function main() {
-// //     const allUsers = await prisma.Mach1.findMany({
-// //         // include: {
-// //         //     posts: true,
-// //         //     profile: true,
-// //         // },
-// //     })
-// //     console.dir(allUsers, { depth: null })
-// //     allUsers.forEach(user => {
-// //         let x = new Date(user.createdAt).getHours().toLocaleString("en-US", { timeZone: 'Asia/Kolkata' }) +":"+ new Date(user.createdAt).getMinutes().toLocaleString("en-US", { timeZone: 'Asia/Kolkata' })
-// // console.log(x)});
-//     // await prisma.mach1.deleteMany({})
-
-//     // await prisma.mach2.deleteMany({})
-//     // await prisma.mach3.deleteMany({})
-//     // await prisma.mach4.deleteMany({})
-//     // await prisma.mach5.deleteMany({})
-//     // await prisma.mach6.deleteMany({})
- 
-// }
-
-// // async function StoreRecord(){
-// //     await prisma.Mach1.create({
-// //         data: {
-// //             peices:"25"
-
-// //         },
-// //     })
-// // }
-// // StoreRecord()
-// //     .then(async () => {
-// //         await prisma.$disconnect()
-// //     })
-// //     .catch(async (e) => {
-// //         console.error(e)
-// //         await prisma.$disconnect()
-// //         process.exit(1)
-// //     })
-
-// // m1.peices = "25";
-// // m1.storeRecord()
-// main()
-//     .then(async () => {
-//         await prisma.$disconnect()
-//     })
-//     .catch(async (e) => {
-//         console.error(e)
-//         await prisma.$disconnect()
-//         process.exit(1)
-//     })
-
-
-// import Users from "../models/UserModel.js";
-
 const getUsers = async (req, res) => {
     try {
         const users = await prisma.PrithviUser.findMany({
@@ -494,8 +347,10 @@ const Login = async (req, res) => {
 }
 
 const Logout = async (req, res) => {
-    // console.log(req.cookies)
-    const refreshToken = req.cookies.refreshToken;
+    const authHeader = req.headers['authorization'];
+    const refreshToken = authHeader.split(' ')[1];
+    //const refreshToken = req.params.refreshToken;
+    console.log(refreshToken);
     if (!refreshToken) return res.sendStatus(204);
     const user = await prisma.PrithviUser.findMany({
         where: {
@@ -510,7 +365,7 @@ const Logout = async (req, res) => {
         },
         data:{ refresh_token: null }
     });
-    res.clearCookie('refreshToken');
+    // res.clearCookie('refreshToken');
     return res.sendStatus(200);
 }
 

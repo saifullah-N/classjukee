@@ -7,7 +7,11 @@ const Navbar = () => {
 
     const Logout = async () => {
         try {
-            await axios.delete('http://localhost:8080/logout');
+            console.log('Logout', JSON.parse(localStorage.getItem('user')));
+            await axios.delete('http://localhost:8080/logout', {headers: {
+                authorization: `Bearer ${JSON.parse(localStorage.getItem('user')) }`
+            }});
+            localStorage.removeItem("user");
             history("/");
         } catch (error) {
             console.log(error);
