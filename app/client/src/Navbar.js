@@ -24,6 +24,7 @@ const Navbar = () => {
                 <div className="navbar-brand">
                     <a className="navbar-item" href="">
                         <img src="" width="112" height="28" alt="logo" />
+                        {/* <p>Prithvi</p> */}
                     </a>
 
                     <a href="/" role="button" className="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">

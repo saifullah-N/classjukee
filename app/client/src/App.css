@@ -27,7 +27,26 @@
 .App-link {
   color: #61dafb;
 }
-
+.col-md-6{
+  padding: 20px 40px;
+}
+.part{
+  background: #ffffff;
+  border-radius: 5px;
+  border: 1px solid #f9f9f9;
+}
+#table-to-xls-report{
+  font-size: 12px !important;
+  margin: 20px 0px;
+}
+.btn{
+  margin: 10px !important;
+  background-color: #010101 !important;
+  border: 1px solid #010101 !important;
+}
+nav{
+  background-color: #ffffff !important;
+}
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);

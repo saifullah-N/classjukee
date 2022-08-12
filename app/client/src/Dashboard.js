@@ -19,7 +19,7 @@ const Dashboard = () => {
     const [expire, setExpire] = useState('');
     const [users, setUsers] = useState([]);
     const history = useNavigate();
-    // axios.defaults.withCredentials = true;
+    axios.defaults.withCredentials = true;
     useEffect(() => {
         getUsers();
         refreshToken();
@@ -101,16 +101,18 @@ const Dashboard = () => {
     }, [setGraphDatapieces, setGraphDataTime]);
     return (
         <div>
+            <div className='row'>
+            <div className='col-md-6'>
+                <div className='part'>
                 <ReactHTMLTableToExcel
                     id="test-table-xls-button"
-                    className="download-table-xls-button"
+                    className="download-table-xls-button btn btn-primary"
                     table="table-to-xls"
                     filename="timeEfficiency"
                     sheet="tablexls"
                     buttonText="Download as XLS" />
                 <Table id="table-to-xls"
                     bordered
-                    variant='dark'
                 >
                     <thead>
                         <tr>
@@ -128,16 +130,19 @@ const Dashboard = () => {
                         <TimeRow PushTimeData={PushTimeData} machID='mach-6'></TimeRow>
                     </tbody>
                 </Table>
+                </div>
+                </div>
+                <div className='col-md-6'>
+                    <div className='part'>
                 <ReactHTMLTableToExcel
                     id="test-table-xls-button"
-                    className="download-table-xls-button"
+                    className="download-table-xls-button btn btn-primary"
                     table="table-to-xls-pieces"
                     filename="peiceEfficiency"
                     sheet="tablexls"
                     buttonText="Download as XLS" />
                 <Table id="table-to-xls-pieces"
                     bordered
-                    variant='dark'
                 >
                     <thead>
                         <tr>
@@ -155,16 +160,34 @@ const Dashboard = () => {
                         <PiecesRow PushPeiceData={PushPeiceData} machID='mach-6'></PiecesRow>
                     </tbody>
                 </Table>
+                </div>
+                
+                </div>
+                </div>
+            <div className='row'>
+            <div className='col-md-6'>
+                <div className='part'>
+                    
+                    <Graph graphData={graphDataTime} label="time"></Graph>
+                    </div>
+                    </div>
+            
+            <div className='col-md-6'>
+                <div className='part'>
+            <Graph graphData={graphDatapieces} label="pieces"></Graph>
+
+                </div>
+                </div>
+                </div>
                 <ReactHTMLTableToExcel
                     id="test-table-xls-button"
-                    className="download-table-xls-button"
+                    className="download-table-xls-button btn btn-primary"
                     table="table-to-xls-report"
                     filename="report"
                     sheet="tablexls"
                     buttonText="Download as XLS" />
                 <Table id="table-to-xls-report"
-                    bordered
-                    variant='dark'>
+                    bordered>
                     <thead>
                         <tr>
                             <th>mach-id</th>
@@ -202,8 +225,7 @@ const Dashboard = () => {
                         <RecordRow machID="mach-6" />
                     </tbody>
                 </Table>
-            <Graph graphData={graphDatapieces} label="pieces"></Graph>
-           <Graph graphData={graphDataTime} label="time"></Graph>
+           
         </div>
     );
 }
