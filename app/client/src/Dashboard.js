@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import './App.css';
 import ReactHTMLTableToExcel from 'react-html-table-to-excel'
 import Table from 'react-bootstrap/Table'
+import {useLocation } from "react-router-dom";
 import { useState, useEffect } from 'react';
 import TimeRow from './TimeRow';
 import PiecesRow from './PiecesRow';
@@ -20,9 +21,13 @@ const Dashboard = () => {
     const [users, setUsers] = useState([]);
     const history = useNavigate();
     // axios.defaults.withCredentials = true;
+    const [status ,setStatus] = useState(true)
+    const location = useLocation()
     useEffect(() => {
-        getUsers();
-        refreshToken();
+        setStatus(location.state)
+        if(status){
+        getUsers() 
+        refreshToken() }
     }, []);
 
     const refreshToken = async () => {
