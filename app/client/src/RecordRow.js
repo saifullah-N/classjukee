@@ -17,15 +17,14 @@ function RecordRow({machID}) {
         setTime([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0,0,0,0,0])
     })
      },[socket,getRecord])
-       
   return (
       <tr>
-        <td>{machID}</td>
+        <td key={machID}>{machID}</td>
      {
 
         time.map((value)=>{
             // console.log(value)   
-           return <td>{value}</td>
+            return <td key={Math.floor(Math.random() *5000).toString()}>{value}</td>
         })
         
     }

@@ -19,7 +19,7 @@ const Dashboard = () => {
     const [expire, setExpire] = useState('');
     const [users, setUsers] = useState([]);
     const history = useNavigate();
-    axios.defaults.withCredentials = true;
+    // axios.defaults.withCredentials = true;
     useEffect(() => {
         getUsers();
         refreshToken();

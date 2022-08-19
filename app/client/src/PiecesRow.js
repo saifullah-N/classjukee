@@ -21,7 +21,7 @@ function PiecesRow({ machID, PushPeiceData}) {
 
     })
   return (
-      <tr>
+      <tr key={machID}>
           <td>{machID}</td>
           <td>{pieces}</td>
           <td>{"efficiency"}</td>

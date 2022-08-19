@@ -1,4 +1,5 @@
 const mqtt = require('mqtt')
+var cron = require('node-cron');
 const express = require('express')
 const app = express()
 const http = require('http')
@@ -20,7 +21,7 @@ app.use(express.json());
 app.use(router);
 app.use(cookieParser())
 const server = http.createServer(app)
-app.use(cors({ credentials: true, origin: 'http://localhost:3000' }));
+app.use(cors({ credentials: true, origin: 'http://localhost:3000',allowedHeaders: ['Authorization'] }));
 const io = new Server(server, {
     cors: {
         origin: "http://localhost:3000",
@@ -45,17 +46,17 @@ const connectUrl = `mqtt://${host}:${port}`
     reconnectPeriod: 1000,
 })
 
-client.setMaxListeners(Infinity)
-   var mArr=[]
-io.on('connection',(socket)=>{   
-    socket.on('macno', (num) => {
- mArr=[]
-        for (let i = 0; i < num; i++) {
-            mArr.push(`mach-${i+1}`)
-        }
-        console.log(mArr);
-    })
-})
+// client.setMaxListeners(Infinity)
+//    var mArr=[]
+// io.on('connection',(socket)=>{   
+//     socket.on('macno', (num) => {
+//  mArr=[]
+//         for (let i = 0; i < num; i++) {
+//             mArr.push(`mach-${i+1}`)
+//         }
+//         console.log(mArr);
+//     })
+// })
 class Data  {    
     
     constructor(machID,db){
@@ -63,24 +64,12 @@ class Data  {
         this.client = client;
         this.io=io;
         this.db=db;
+        this.cron= cron;
     }
-
-ChronJob(){
-setInterval(async ()=>{
-    this.day=new Date();
-    if(this.day.getHours()+":"+this.day.getMinutes()+":"+this.day.getSeconds()=="24:00:0"){
-        await this.db.deleteMany({})
-        console.log("refresh")
-    }
-
-
-},1000);
-
-}   
 
 connection() {
   this.client.on("connect",()=>{
-    console.log("connected");
+    // console.log("connected");
 })}
 subscribeTopieces(){
     this.client.subscribe(`priv/${this.machID}/pieces`)
@@ -161,13 +150,9 @@ getpieces(){
             }        
             
          storeRecord() {
-      setInterval(()=>{
      this.getpieces()
-     this.newTime = new Date()
-     this.timeZero = this.newTime.getHours() + ":00:0"
-     this.timeThirty = this.newTime.getHours() + ":30:0"
-    if ((this.newTime.getHours() + ":" + this.newTime.getMinutes() + ":" + this.newTime.getSeconds()) == this.timeZero || (this.newTime.getHours() + ":" + this.newTime.getMinutes() + ":" + this.newTime.getSeconds()) == this.timeThirty) {
-        if (this.pieces != null && this.pieces != undefined)
+             this.cron.schedule('30 * * * *',() => {
+    if (this.pieces != null && this.pieces != undefined)
        { 
             this.db.create({data :{pieces: this.pieces}}).then(async () => {
                 await prisma.$disconnect()
@@ -189,10 +174,7 @@ getpieces(){
                     process.exit(1)
                 })
 }
-         //formatTime(timestrToSec(this.timeCheck) + timestrToSec("00:30:00"));
-     }
- },1000)
-
+})
 
 
     }
@@ -270,13 +252,6 @@ m4.PassReacordToReact()
 m5.PassReacordToReact()
 m6.PassReacordToReact()
 
-m1.ChronJob()
-m2.ChronJob()
-m3.ChronJob()
-m4.ChronJob()
-m5.ChronJob()
-m6.ChronJob()
-
 server.listen(8080, () => {
     console.log("done dude")
 })
@@ -350,7 +325,7 @@ const Logout = async (req, res) => {
     const authHeader = req.headers['authorization'];
     const refreshToken = authHeader.split(' ')[1];
     //const refreshToken = req.params.refreshToken;
-    console.log(refreshToken);
+    // console.log(refreshToken);
     if (!refreshToken) return res.sendStatus(204);
     const user = await prisma.PrithviUser.findMany({
         where: {
@@ -415,6 +390,18 @@ router.post('/users', Register);
 router.post('/login', Login);
 router.post('/token', refreshToken);
 router.delete('/logout', Logout);
+cron.schedule('0 0 * * *',async () => {
+    console.log('Running a job end of day timezone');
+    await m1.db.deleteMany({})
+    await m2.db.deleteMany({})
+    await m3.db.deleteMany({})
+    await m4.db.deleteMany({})
+    await m5.db.deleteMany({})
+    await m6.db.deleteMany({})   
+}, {
+    scheduled: true,
+    timezone: "Asia/Kolkata"
+});
 // import express from "express";
 // import dotenv from "dotenv";
 //import cookieParser from "cookie-parser";
@@ -434,3 +421,6 @@ router.delete('/logout', Logout);
 //   async function main(){await prisma.prithviUser.deleteMany({})
 // console.log('Server running at http://localhost:')}
 // main();
+// m1.cron.schedule('29 * * * *', () => {
+//     console.log("up time: " + new Date().getMinutes() )
+// })
