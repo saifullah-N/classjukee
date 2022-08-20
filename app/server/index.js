@@ -46,6 +46,8 @@ const connectUrl = `mqtt://${host}:${port}`
     reconnectPeriod: 1000,
 })
 
+client.setMaxListeners(0)
+io.setMaxListeners(0)
 // client.setMaxListeners(Infinity)
 //    var mArr=[]
 // io.on('connection',(socket)=>{   

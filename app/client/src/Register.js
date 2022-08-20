@@ -56,7 +56,7 @@ const Register = () => {
                 password: password,
                 confPassword: confPassword
             });
-            history("/Dashboard",{state:false});
+            history("/Dashboard",{state:"register"});
         } catch (error) {
             if (error.response) {
                 setMsg(error.response.data.msg);

@@ -21,14 +21,14 @@ const Dashboard = () => {
     const [users, setUsers] = useState([]);
     const history = useNavigate();
     // axios.defaults.withCredentials = true;
-    const [status ,setStatus] = useState(true)
+    const [status ,setStatus] = useState()
     const location = useLocation()
     useEffect(() => {
         setStatus(location.state)
-        if(status){
-        getUsers() 
-        refreshToken() }
-    }, []);
+        status == "login" ? getUsers() : console.log(location.state)
+        status == "login" ? refreshToken() : console.log(location.state)
+}
+    , []);
 
     const refreshToken = async () => {
         try {

@@ -21,7 +21,7 @@ const Login = () => {
                 }
                 return response.data;
             });
-            history("/dashboard",{state: true});
+            history("/dashboard",{state: "login"});
         } catch (error) {
             if (error.response) {
                 setMsg(error.response.data.msg);
