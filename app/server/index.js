@@ -31,8 +31,11 @@ const io = new Server(server, {
 
 
 //mqtt configurations
-const host =  '10.1.75.125'//'182.72.162.13'
-const port = '2123'//'2123'//'9900'
+// 182.72.162.13 9900
+
+// Nuttertools @123
+const host =  '182.72.162.13'//'10.1.75.125'
+const port = '9900'//'2123'//'2123'
 const clientId = `mqtt_${Math.random().toString(16).slice(3)}`
 
 const connectUrl = `mqtt://${host}:${port}`
@@ -42,7 +45,7 @@ const connectUrl = `mqtt://${host}:${port}`
     clean: true,
     connectTimeout: 4000,
     username: 'iqube',
-    password: 'iQube@2019',
+     password:   'Nuttertools@123',              //'iQube@2019',
     reconnectPeriod: 1000,
 })
 
