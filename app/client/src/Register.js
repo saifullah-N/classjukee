@@ -50,13 +50,13 @@ const Register = () => {
     const Register = async (e) => {
         e.preventDefault();
         try {
-            await axios.post('http://localhost:8080/users', {
+            await axios.post('http://localhost:5000/users', {
                 name: name,
                 email: email,
                 password: password,
                 confPassword: confPassword
             });
-            history("/Dashboard");
+            history("/Dashboard",{state:"register"});
         } catch (error) {
             if (error.response) {
                 setMsg(error.response.data.msg);

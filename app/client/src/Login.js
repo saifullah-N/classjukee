@@ -11,7 +11,7 @@ const Login = () => {
     const Auth = async (e) => {
         e.preventDefault();
         try {
-            await axios.post('http://localhost:8080/login', {
+            await axios.post('http://localhost:5000/login', {
                 email: email,
                 password: password
             }).then(response => {
@@ -21,7 +21,7 @@ const Login = () => {
                 }
                 return response.data;
             });
-            history("/dashboard");
+            history("/dashboard",{state: "login"});
         } catch (error) {
             if (error.response) {
                 setMsg(error.response.data.msg);

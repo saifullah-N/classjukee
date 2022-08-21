@@ -100,7 +100,7 @@ function Graph({graphData ,label}) {
     return (
         <>
 
-            <div style={{ width: "1200px", margin: "auto auto" }}>
+            <div style={{ margin: "auto auto" }}>
                 <a onClick={saveCanvas} className="btn btn-primary">Download as PNG</a>
                 <Bar options={options}  id={label} data={data} />
             </div>

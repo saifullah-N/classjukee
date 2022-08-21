@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import openSocket from 'socket.io-client';
 // import { getMac, subscribeToTime } from './api'
 
-var socket = openSocket("http://localhost:8080")
+var socket = openSocket("http://localhost:5000")
 
 
 function TimeRow({machID,PushTimeData}) {

@@ -8,7 +8,7 @@ const Navbar = () => {
     const Logout = async () => {
         try {
             console.log('Logout', JSON.parse(localStorage.getItem('user')));
-            await axios.delete('http://localhost:8080/logout', {headers: {
+            await axios.delete('http://localhost:5000/logout', {headers: {
                 authorization: `Bearer ${JSON.parse(localStorage.getItem('user')) }`
             }});
             localStorage.removeItem("user");
@@ -24,6 +24,7 @@ const Navbar = () => {
                 <div className="navbar-brand">
                     <a className="navbar-item" href="">
                         <img src="" width="112" height="28" alt="logo" />
+                        {/* <p>Prithvi</p> */}
                     </a>
 
                     <a href="/" role="button" className="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
