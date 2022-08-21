@@ -1,7 +1,7 @@
 
 import React, { useEffect,useState } from 'react'
 import openSocket from 'socket.io-client';
-var socket = openSocket("http://localhost:8080")
+var socket = openSocket("http://localhost:5000")
 
 function RecordRow({machID}) {
 

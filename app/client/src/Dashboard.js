@@ -12,7 +12,7 @@ import Graph from './Graph';
 import _ from 'lodash';
 import RecordRow from './RecordRow';
 import openSocket from 'socket.io-client';
-var socket = openSocket("http://localhost:8080")
+var socket = openSocket("http://localhost:5000")
 
 const Dashboard = () => {
     const [name, setName] = useState('');
@@ -34,7 +34,7 @@ const Dashboard = () => {
         try {
             let data = JSON.parse(localStorage.getItem('user'))
             // console.log(data)
-            const response = await axios.post('http://localhost:8080/token',{  refreshToken: data });
+            const response = await axios.post('http://localhost:5000/token',{  refreshToken: data });
             setToken(response.data.accessToken);
             const decoded = jwt_decode(response.data.accessToken);
             setName(decoded.name);
@@ -51,7 +51,7 @@ const Dashboard = () => {
     axiosJWT.interceptors.request.use(async (config) => {
         const currentDate = new Date();
         if (expire * 1000 < currentDate.getTime()) {
-            const response = await axios.post('http://localhost:8080/token', { refreshToken: JSON.parse(localStorage.getItem('user')) });
+            const response = await axios.post('http://localhost:5000/token', { refreshToken: JSON.parse(localStorage.getItem('user')) });
             config.headers.Authorization = `Bearer ${response.data.accessToken}`;
             setToken(response.data.accessToken);
             const decoded = jwt_decode(response.data.accessToken);
@@ -64,7 +64,7 @@ const Dashboard = () => {
     });
 
     const getUsers = async () => {
-        const response = await axiosJWT.get('http://localhost:8080/users', {
+        const response = await axiosJWT.get('http://localhost:5000/users', {
             headers: {
                 authorization: `Bearer ${token}`
             }

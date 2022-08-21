@@ -8,7 +8,7 @@ const Navbar = () => {
     const Logout = async () => {
         try {
             console.log('Logout', JSON.parse(localStorage.getItem('user')));
-            await axios.delete('http://localhost:8080/logout', {headers: {
+            await axios.delete('http://localhost:5000/logout', {headers: {
                 authorization: `Bearer ${JSON.parse(localStorage.getItem('user')) }`
             }});
             localStorage.removeItem("user");
