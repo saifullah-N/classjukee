@@ -7,7 +7,7 @@ services:
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_DB=jukee
-      - POSTGRES_PASSWORD=iqube
+      - POSTGRES_PASSWORD=saifullah
   nginx:
     depends_on:
       - client
