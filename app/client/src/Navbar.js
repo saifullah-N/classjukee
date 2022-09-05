@@ -1,7 +1,8 @@
 import React from 'react'
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-
+import logo from './navLogo.png'
+import "./App.css"
 const Navbar = () => {
     const history = useNavigate();
 
@@ -22,8 +23,8 @@ const Navbar = () => {
         <nav className="navbar is-light" role="navigation" aria-label="main navigation">
             <div className="container">
                 <div className="navbar-brand">
-                    <a className="navbar-item" href="">
-                        <img src="" width="112" height="28" alt="logo" />
+                    <a href="">
+                        <img src={logo} className="logo" alt="logo" />
                         {/* <p>Prithvi</p> */}
                     </a>
 
