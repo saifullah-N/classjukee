@@ -1,12 +1,15 @@
 version: "3"
 services:
   postgres:
+    ports: 
+      - 6432:5432 
     image: "postgres:latest"
     environment:
-      - POSTGRES_PASSWORD=iqube
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=jukee
+      - POSTGRES_PASSWORD=saifullah
   nginx:
     depends_on:
-      - api
       - client
     restart: always
     build:
@@ -18,19 +21,20 @@ services:
     build:
       dockerfile: Dockerfile.dev
       context: "./server"
-    volumes:
-      - /app/node_modules
-      - ./server:/app
-    environment:
-      - PGUSER=postgres
-      - PGHOST=localhost
-      - PGDATABASE=postgres
-      - PGPASSWORD=iqube
-      - PGPORT=5432
+    # volumes:
+    #   - /app/node_modules
+    #   - ./server:/app
+    # environment:
+    #   - PGUSER=postgres
+    #   - PGHOST=localhost
+    #   - PGDATABASE=postgres
+    #   - PGPASSWORD=iqube
+    #   - PGPORT=5432
+    env_file: "./server/production.env"
     ports:
       - "5000:5000"
-    links:
-     - client 
+    depends_on: 
+     - postgres
   client:
     stdin_open: true
     environment:
@@ -38,9 +42,12 @@ services:
     build:
       dockerfile: Dockerfile.dev
       context: ./client
-    volumes:
-      - /app/node_modules
-      - ./client:/app
+    # volumes:
+    #   - /app/node_modules
+    #   - ./client:/app
     ports:
       - "3000:3000"
+    depends_on:
+      - api
+
 
